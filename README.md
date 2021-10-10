@@ -1,7 +1,7 @@
 # movie_freakz
 ✔ Communicating with a webservice (rest api) using Retrofit2
 ✔ MVVM Architecture: ViewModel, Repository, Client structure
-How to design an architecture
+✔ How to design an architecture
 ✔ Singletons
 ✔ Custom Loading Animation ProgressBar in Recyclerview
 ✔ ViewModels and AndroidViewModels

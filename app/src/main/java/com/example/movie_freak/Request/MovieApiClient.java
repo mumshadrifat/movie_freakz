@@ -15,6 +15,7 @@ import com.example.movie_freak.credential.Credential;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -25,6 +26,7 @@ public class MovieApiClient {
 
     public MutableLiveData<List<MovieModel>> movies;
     private  static MovieApiClient instance;
+   private RetriveMovieRunnable retriveMovieRunnable;
 
     public static MovieApiClient getInstance() {
         if(instance==null){
@@ -39,13 +41,23 @@ public class MovieApiClient {
         movies=new MutableLiveData<>();
 
     }
+
+
+
     public LiveData<List<MovieModel>>getMovies(){
         return  movies;
     }
 
-    public void searchMovies(){
 
-        final Future myHandler=AppExecutors.getInstance().getNetworkIO().submit();
+
+    public void searchMoviesApi(String query,int pageNumber ){
+
+     if(retriveMovieRunnable!=null){
+         retriveMovieRunnable=null;
+     }
+      retriveMovieRunnable=new RetriveMovieRunnable(query,pageNumber);
+
+        final Future myHandler=AppExecutors.getInstance().getNetworkIO().submit(retriveMovieRunnable);
 
         AppExecutors.getInstance().getNetworkIO().schedule(new Runnable() {
             @Override
@@ -58,9 +70,9 @@ public class MovieApiClient {
 
 
 
-    // Retrieveing data from rest api by runnable class
-    // two request 1.Movie list Search
-                //  2. Single Movie search by id
+     //Retrieveing data from rest api by runnable class
+     //two request 1.Movie list Search
+       //           2. Single Movie search by id
 
   private  class RetriveMovieRunnable implements  Runnable{
 
@@ -68,60 +80,66 @@ public class MovieApiClient {
       private int page_number;
       boolean cancel_request;
 
-      public RetriveMovieRunnable(String query, int page_number, boolean cancel_request) {
+      public RetriveMovieRunnable(String query, int page_number) {
           this.query = query;
           this.page_number = page_number;
-          this.cancel_request = false;
+          cancel_request=false;
       }
 
       @Override
       public void run() {
-    try{ Response response=getMovies().execute().body();
+          try {
+                  //Getting response object
+                 Response response = getMovies(query, page_number).execute();
 
 
-
-          if(cancel_request){
-            return;
-       if(response.code()==200){
-
-           List<MovieModel> list=new ArrayList<>(((MovieSearch)response.body()).getMovies())
-               //Sending data to live data
-              //Post Value: used for background thread
-           //Set Value:NOt for background
-           if(page_number==1) {
-               movies.postValue(list);
-           }
-       else {
-           List<MovieModel> currentMovieList=movies.getValue();
-           currentMovieList.addAll(list);
-           movies.postValue(currentMovieList);
+                 if (cancel_request) {
+                    return;
+                    }
+                 if (response.code() == 200) {
+                  // List<MovieModel>movies=new ArrayList<>(response.body().getMovies());
+                  List<MovieModel> list = new ArrayList<>(((MovieSearch) response.body()).getMovies());
 
 
-           }
+                  //Sending data to live data
+                  //Post Value: used for background thread
+                  //Set Value:NOt for background
+                  if (page_number == 1) {
+                      movies.postValue(list);
+                  } else {
+                      List<MovieModel> currentMovieList = movies.getValue();
+                      currentMovieList.addAll(list);
+                      movies.postValue(currentMovieList);
 
-       }
-       else{
-           String error=response.errorBody().string();
-           Log.v("tag",'Eror'+error);
-       }
+
+                  }
+
+              }
+                 else {
+                     String error=response.errorBody().string();
+                     Log.v("tag","Eror"+error);
+                 }
 
 
+          }
 
 
-        }
-    } catch (IOException e) {
+    catch (IOException e) {
         e.printStackTrace();
+        movies.postValue(null);
     }
 
 
       }
 
-      //Search method query for single genre/etc
-      Call<MovieSearch>getMovies(String query, int page_number){
+
+
+      //Search method query
+      private Call<MovieSearch> getMovies(String query, int page_number){
           return Servicy.getMovie_api().searchmovies(
                   Credential.Api_Key,
                   query,
-                  String.valueOf(page_number)
+                  page_number    //Note: int  but string taken
           );
 
 

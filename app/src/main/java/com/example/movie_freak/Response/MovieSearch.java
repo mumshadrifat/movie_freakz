@@ -14,7 +14,7 @@ public class MovieSearch {
 
 
     @SerializedName("results")
-    @Expose private List<MovieModel>movies;
+    @Expose public List<MovieModel>movies;
 
 
     public int getTotal_result(){

@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void getResponse() {
       MovieApi movieApi= Servicy.getMovie_api();
-        Call<MovieSearch> responseCall=movieApi.searchmovies("7b4a111ce758e20da5a946cec677e036","Action","1");
+        Call<MovieSearch> responseCall=movieApi.searchmovies("7b4a111ce758e20da5a946cec677e036","Action",1);
         responseCall.enqueue(new Callback<MovieSearch>() {
             @Override
             public void onResponse(Call<MovieSearch> call, Response<MovieSearch> response) {

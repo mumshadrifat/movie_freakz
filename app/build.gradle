@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
 }
 
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
@@ -46,7 +47,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
-    def lifecycle_version = "2.4.0-rc01"
+    def lifecycle_version = "2.2.0"
     def arch_version = "2.1.0"
 
     // ViewModel

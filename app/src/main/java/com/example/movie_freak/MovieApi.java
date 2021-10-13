@@ -15,7 +15,7 @@ public interface MovieApi {
     Call<MovieSearch> searchmovies(
             @Query("api_key") String key,
             @Query("query") String query,
-            @Query("page") String page
+            @Query("page") int page
 
     );
     @GET("movie/{movie_id}?")

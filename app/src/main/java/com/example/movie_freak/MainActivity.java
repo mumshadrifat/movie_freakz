@@ -1,5 +1,6 @@
 package com.example.movie_freak;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -37,20 +38,30 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         button = findViewById(R.id.button);
         movieListViwModel = new ViewModelProvider(this).get(MovieListViwModel.class);
+         //tesing the method search movie apibt
+        Log.v("tag ","any data change");
+        button.setOnClickListener(v -> {
 
+            Log.v("tag ","button clicked");
+            searchMovieApi("jack Racher",1);
+        });
+       Log.v("tag ","any data change");
+        AnyDataChange();
 
     }
 
 //observing any data change
     public void AnyDataChange(){
-        movieListViwModel.getMovies().observe(this, new Observer<List<MovieModel>>() {
-            @Override
-            public void onChanged(List<MovieModel> movieModels) {
-                //observing for data change ......
-
-
-
+        movieListViwModel.getMovies().observe(this, movieModels -> {
+            //observing for data change ......
+            if(movieModels != null){
+              for(  MovieModel movieModel:movieModels){
+                  Log.v("tag","Title names::"+movieModel.getTitle());
+              }
             }
+
+
+
         });
     }
 
@@ -61,14 +72,14 @@ public class MainActivity extends AppCompatActivity {
         Call<MovieSearch> responseCall=movieApi.searchmovies("7b4a111ce758e20da5a946cec677e036","Action",1);
         responseCall.enqueue(new Callback<MovieSearch>() {
             @Override
-            public void onResponse(Call<MovieSearch> call, Response<MovieSearch> response) {
+            public void onResponse(@NonNull Call<MovieSearch> call, @NonNull Response<MovieSearch> response) {
                 if(response.code()==200){
 
                //    Log.v("tag","the response"+response.body().toString());
 
 
-
-                List<MovieModel>movies=new ArrayList<>(response.body().getMovies());
+                    assert response.body() != null;
+                    List<MovieModel>movies=new ArrayList<>(response.body().getMovies());
                 for(MovieModel movi:movies){
 
                   Log.v("tag","title::"+movi.getTitle().toString());
@@ -76,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
                  }
                 else{
+                    assert response.errorBody() != null;
                     Log.v("TAG","Error"+ response.errorBody().toString());
                 }
 
@@ -83,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<MovieSearch> call, Throwable t) {
+            public void onFailure(@NonNull Call<MovieSearch> call, @NonNull Throwable t) {
 
             }
         });
@@ -96,14 +108,16 @@ public class MainActivity extends AppCompatActivity {
         Call<MovieModel> movieResponse= movieApi_id.getMOvie(550, Credential.Api_Key);
    movieResponse.enqueue(new Callback<MovieModel>() {
        @Override
-       public void onResponse(Call<MovieModel> call, Response<MovieModel> response) {
+       public void onResponse(@NonNull Call<MovieModel> call, @NonNull Response<MovieModel> response) {
 
            if(response.code()==200){
 
 
+               assert response.body() != null;
                Log.v("single movie","Movie_title::"+response.body().getTitle());
            }
            else{
+               assert response.errorBody() != null;
                Log.v("TAG","Error"+ response.errorBody().toString());
            }
 
@@ -111,12 +125,20 @@ public class MainActivity extends AppCompatActivity {
        }
 
        @Override
-       public void onFailure(Call<MovieModel> call, Throwable t) {
+       public void onFailure(@NonNull Call<MovieModel> call, @NonNull Throwable t) {
 
        }
    });
 
    }
+
+
+
+
+   //calling method in main acivity or ui .....MVVM
+    public  void searchMovieApi(String query,int page_number){
+  movieListViwModel.searchMovieApi(query,page_number);
+    }
 }
 
 

@@ -7,15 +7,12 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.movie_freak.AppExecutors;
 import com.example.movie_freak.Models.MovieModel;
-import com.example.movie_freak.MovieApi;
-import com.example.movie_freak.Response.MovieResponse;
 import com.example.movie_freak.Response.MovieSearch;
 import com.example.movie_freak.credential.Credential;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -26,7 +23,7 @@ public class MovieApiClient {
 
     public MutableLiveData<List<MovieModel>> movies;
     private  static MovieApiClient instance;
-   private RetriveMovieRunnable retriveMovieRunnable;
+    private RetriveMovieRunnable retriveMovieRunnable;
 
     public static MovieApiClient getInstance() {
         if(instance==null){
@@ -57,22 +54,19 @@ public class MovieApiClient {
      }
       retriveMovieRunnable=new RetriveMovieRunnable(query,pageNumber);
 
-        final Future myHandler=AppExecutors.getInstance().getNetworkIO().submit(retriveMovieRunnable);
+        final Future<?> myHandler=AppExecutors.getInstance().getNetworkIO().submit(retriveMovieRunnable);
 
-        AppExecutors.getInstance().getNetworkIO().schedule(new Runnable() {
-            @Override
-            public void run() {
-                //cancel retrofit for issues such as low memory,crashes etc
-            myHandler.cancel(true);
-            }
+        AppExecutors.getInstance().getNetworkIO().schedule(() -> {
+            //cancel retrofit for issues such as low memory,crashes etc
+        myHandler.cancel(true);
         },500, TimeUnit.MICROSECONDS);
     }
 
 
 
-     //Retrieveing data from rest api by runnable class
-     //two request 1.Movie list Search
-       //           2. Single Movie search by id
+         // Retrieveing data from rest api by runnable class
+          //two request -----1.Movie list Search
+       //              -----2. Single Movie search by id
 
   private  class RetriveMovieRunnable implements  Runnable{
 
@@ -98,16 +92,21 @@ public class MovieApiClient {
                     }
                  if (response.code() == 200) {
                   // List<MovieModel>movies=new ArrayList<>(response.body().getMovies());
-                  List<MovieModel> list = new ArrayList<>(((MovieSearch) response.body()).getMovies());
 
 
-                  //Sending data to live data
-                  //Post Value: used for background thread
-                  //Set Value:NOt for background
+                     assert response.body() != null;
+                     List<MovieModel> list = new ArrayList<>(((MovieSearch) response.body()).getMovies());
+
+
+
                   if (page_number == 1) {
+                      //Sending data to live data
+                      //Post Value: used for background thread
+                      //Set Value:NOt for background
                       movies.postValue(list);
                   } else {
                       List<MovieModel> currentMovieList = movies.getValue();
+                      assert currentMovieList != null;
                       currentMovieList.addAll(list);
                       movies.postValue(currentMovieList);
 
@@ -116,6 +115,7 @@ public class MovieApiClient {
 
               }
                  else {
+                     assert response.errorBody() != null;
                      String error=response.errorBody().string();
                      Log.v("tag","Eror"+error);
                  }
@@ -148,7 +148,9 @@ public class MovieApiClient {
     public  void setCancel_request(){
 
         Log.v("canceling -----","cancel request");
+
         cancel_request=true;
+
     }
 
 

@@ -28,4 +28,9 @@ public class MovieRepositories {
 
 
     }
+
+    public void searchMovieApi(String query,int page_number){
+        movieApiClient.searchMoviesApi(query,page_number);
+
+    }
 }

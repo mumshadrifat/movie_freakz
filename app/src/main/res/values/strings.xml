@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">movie_freak</string>
+    <string name="todo">TODO</string>
+    <string name="movie_title">Movie Title</string>
+    <string name="movie_druation">Movie_druation</string>
 </resources>

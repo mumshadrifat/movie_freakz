@@ -4,22 +4,25 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class MovieModel implements  Parcelable  {
-    public  String title;
-    public  int id;
-    public  String poster_path;
-    public  String release_date;
-    public  float vote_average;
-    public  String overview;
+    private   String title;
+    private  int id;
+    private  String poster_path;
+    private  String release_date;
+    private  float vote_average;
+    private  String overview;
+    private  int runtime;
 
 
 
-    public MovieModel(String title, int id, String poster_path, String release_date, float vote_average, String overview) {
+
+    public MovieModel(String title, int id, String poster_path, String release_date, float vote_average, String overview,int runtime) {
         this.title = title;
         this.id = id;
         this.poster_path = poster_path;
         this.release_date = release_date;
         this.vote_average = vote_average;
         this.overview = overview;
+        this.runtime = runtime;
     }
 
     protected MovieModel(Parcel in) {
@@ -29,6 +32,8 @@ public class MovieModel implements  Parcelable  {
         release_date = in.readString();
         vote_average = in.readFloat();
         overview = in.readString();
+        runtime=in.readInt();
+
     }
 
     public static final Creator<MovieModel> CREATOR = new Creator<MovieModel>() {
@@ -67,6 +72,9 @@ public class MovieModel implements  Parcelable  {
         return overview;
     }
 
+    public int getRuntime() {
+        return runtime;
+    }
 
     @Override
     public int describeContents() {
@@ -81,6 +89,7 @@ public class MovieModel implements  Parcelable  {
         dest.writeString(release_date);
         dest.writeFloat(vote_average);
         dest.writeString(overview);
+        dest.writeInt(runtime);
     }
 }
 

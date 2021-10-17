@@ -2,21 +2,23 @@ package com.example.movie_freak;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
+import android.widget.Adapter;
 
+import com.example.movie_freak.Adaptars.MovieRecyclerView;
+import com.example.movie_freak.Adaptars.OnMovieListener;
 import com.example.movie_freak.Models.MovieModel;
 import com.example.movie_freak.Request.Servicy;
-import com.example.movie_freak.Response.MovieResponse;
 import com.example.movie_freak.Response.MovieSearch;
 import com.example.movie_freak.ViewModel.MovieListViwModel;
 import com.example.movie_freak.credential.Credential;
-import androidx.lifecycle.ViewModelProvider;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 
 import java.util.ArrayList;
@@ -27,36 +29,56 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class MainActivity extends AppCompatActivity {
-   Button button;
+public class MovieActivityList extends AppCompatActivity {
+   RecyclerView recyclerView;
   //view models:
     MovieListViwModel movieListViwModel;
+    MovieRecyclerView movieRecyclerAdapter;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        button = findViewById(R.id.button);
+        recyclerView=findViewById(R.id.recyclerView);
         movieListViwModel = new ViewModelProvider(this).get(MovieListViwModel.class);
-         //tesing the method search movie apibt
-        Log.v("tag ","any data change");
-        button.setOnClickListener(v -> {
+
+        configurationMovieRecylerView();
+
+     /*   button.setOnClickListener(v -> {
 
             Log.v("tag ","button clicked");
             searchMovieApi("jack Racher",1);
-        });
-       Log.v("tag ","any data change");
+        });*/
+     //  Log.v("tag ","any data change");
+
+
+
         AnyDataChange();
+        searchMovieApi("fast",1);
 
     }
 
-//observing any data change
+    private void configurationMovieRecylerView() {
+
+        movieRecyclerAdapter=new MovieRecyclerView();
+        recyclerView.setAdapter(movieRecyclerAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+    }
+
+    //observing any data change
     public void AnyDataChange(){
         movieListViwModel.getMovies().observe(this, movieModels -> {
             //observing for data change ......
             if(movieModels != null){
               for(  MovieModel movieModel:movieModels){
                   Log.v("tag","Title names::"+movieModel.getTitle());
+
+
+
+                  movieRecyclerAdapter.setmMovies(movieModels);
               }
             }
 

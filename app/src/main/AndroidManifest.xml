@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Movie_freak">
 
-        <activity android:name=".MainActivity"
+        <activity android:name=".MovieActivityList"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

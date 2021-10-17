@@ -52,11 +52,17 @@ public class MovieApiClient {
      if(retriveMovieRunnable!=null){
          retriveMovieRunnable=null;
      }
+     //Singleton pattern for better perfomance
       retriveMovieRunnable=new RetriveMovieRunnable(query,pageNumber);
+
+
+     //Loading movies...>>>>
 
         final Future<?> myHandler=AppExecutors.getInstance().getNetworkIO().submit(retriveMovieRunnable);
 
         AppExecutors.getInstance().getNetworkIO().schedule(() -> {
+
+
             //cancel retrofit for issues such as low memory,crashes etc
         myHandler.cancel(true);
         },500, TimeUnit.MICROSECONDS);
@@ -93,7 +99,7 @@ public class MovieApiClient {
                  if (response.code() == 200) {
                   // List<MovieModel>movies=new ArrayList<>(response.body().getMovies());
 
-
+                //assert for safe mode as it could not return
                      assert response.body() != null;
                      List<MovieModel> list = new ArrayList<>(((MovieSearch) response.body()).getMovies());
 
@@ -104,6 +110,8 @@ public class MovieApiClient {
                       //Post Value: used for background thread
                       //Set Value:NOt for background
                       movies.postValue(list);
+
+
                   } else {
                       List<MovieModel> currentMovieList = movies.getValue();
                       assert currentMovieList != null;
@@ -139,7 +147,8 @@ public class MovieApiClient {
           return Servicy.getMovie_api().searchmovies(
                   Credential.Api_Key,
                   query,
-                  page_number    //Note: int  but string taken
+                  page_number
+
           );
 
 

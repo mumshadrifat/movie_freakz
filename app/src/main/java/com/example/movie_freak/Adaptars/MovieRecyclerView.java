@@ -3,9 +3,6 @@ package com.example.movie_freak.Adaptars;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.RatingBar;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,7 +17,9 @@ public class MovieRecyclerView extends RecyclerView.Adapter<RecyclerView.ViewHol
  private   List<MovieModel>mMovies;
  private OnMovieListener onMovieListener;
 
-
+    public MovieRecyclerView(OnMovieListener onMovieListener) {
+        this.onMovieListener = onMovieListener;
+    }
 
     @NonNull
     @Override
@@ -37,18 +36,26 @@ public class MovieRecyclerView extends RecyclerView.Adapter<RecyclerView.ViewHol
         ((MovieViewHolder)holder).duration.setText(mMovies.get(position).getRuntime());
        //Using glind library for image
         Glide.with(holder.itemView.getContext())
-                .load(mMovies.get(position))
+                .load(mMovies.get(position).getPoster_path())
                 .into(((MovieViewHolder)holder).imageView);
 
     }
 
     @Override
     public int getItemCount() {
-    return mMovies.size();
+
+        if(mMovies!=null){
+            return mMovies.size();
+        }
+        else {
+        return 0;
+        }
+
     }
 
 
-    public  void setmMovies(){
+    public void setmMovies(List<MovieModel> mMovies) {
+        this.mMovies = mMovies;
         notifyDataSetChanged();
     }
 }
